@@ -148,13 +148,13 @@ $domNodeList = $doc->getElementsByTagName('form');
 echo $domNodeList->length;
 $node = $domNodeList->item(0);
 $nodeMap = $node->attributes;
-echo $nodeMap->getNamedItem('name')->nodeValue == '';
+echo $nodeMap->getNamedItem('name')->nodeValue;
 
 $opts = array(
   'http' => array(
     'method' => 'POST',
     'header' => 'User-Agent: Mozilla/5.0 (Windows NT 5.1; rv:5.0) Gecko/20100101 Firefox/5.0\r\n',
-    'content' => http_buid_query(array(
+    'content' => http_build_query(array(
       'action' => 'submit',
       'forcelogin' => '',
       'from' => '',
@@ -174,10 +174,68 @@ $opts = array(
   )
 );
 
-$context = stream_context_create($opts);
+//$context = stream_context_create($opts);
 
-$ret = file_get_contents('http://api.t.sina.com.cn/oauth/authorize', false, $context);
+//$ret = file_get_contents('http://api.t.sina.com.cn/oauth/authorize', false, $context);
 
-echo $ret;
+
+$pinHtml = <<<'PIN'
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>应用授权 - 新浪微博</title>
+<link type="text/css" href="http://timg.sjs.sinajs.cn/t35/appstyle/opent/css/oauth/oauth.css" rel="stylesheet" />
+<script type="text/javascript">
+function canchange()
+{
+        document.forms['authZForm'].from.value='turnuser';
+        document.forms['authZForm'].action.value='';
+	document.forms['authZForm'].submit();
+}
+</script>
+</head>
+
+<body>
+<div class="oauth_top">
+	<div class="au_cWrap clearFix">
+		<div class="logo"><img src="http://timg.sjs.sinajs.cn/t35/appstyle/opent/images/oauth/logo_s.png" alt="" /></div>
+
+	</div>
+</div>
+<div class="oauth_cont">
+	<div class="au_cWrap clearFix">
+		<div class="des_content1">
+			<div class="getCodeWrap"> 获取到的授权码：<span class="fb">857498</span> </div>
+		</div>
+	</div>
+
+</div>
+<div class="oauth_btn">
+	<div class="au_cWrap gray6"> Copyright&copy; 1996 - 2011 SINA Corporation, All Rights Reserved <a href="">新浪公司</a> 版权所有 </div>
+</div>
+</body>
+</html>  
+PIN;
+
+$doc = new DOMDocument();
+@$doc->loadHTML($pinHtml);
+//echo $doc->saveHTML();
+$domNodeList = $doc->getElementsByTagName('span');
+
+if (!$domNodeList->length)
+{
+  return;
+}
+
+$node = $domNodeList->item(0);
+$pin = trim($node->textContent);
+
+if (empty($pin))
+{
+  return;
+}
+
+echo $pin;
 
 
