@@ -1,0 +1,1 @@
+<?phpclass Auth{  public function __construct(User $user, Config $config)  {      }}

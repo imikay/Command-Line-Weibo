@@ -12,24 +12,26 @@ session_start();
 if (file_exists('session'))
 {
   $contents = file_get_contents('session');
-}
-
-if (strlen($contents))
-{
-  $_SESSION = unserialize($contents);
   
-  $c = new WeiboClient( WB_AKEY , 
-                      WB_SKEY , 
-                      $_SESSION['last_key']['oauth_token'] , 
-                      $_SESSION['last_key']['oauth_token_secret']  );
-                      
-$ms  = $c->home_timeline(); // done
-$me = $c->verify_credentials();
+  if (strlen($contents))
+  {
+    $_SESSION = unserialize($contents);
+    
+    $c = new WeiboClient( WB_AKEY , 
+                        WB_SKEY , 
+                        $_SESSION['last_key']['oauth_token'] , 
+                        $_SESSION['last_key']['oauth_token_secret']  );
+                        
+    $ms  = $c->home_timeline(); // done
+    $me = $c->verify_credentials();
 
-echo print_r($ms);
+    echo print_r($ms);
 
-return;
+    return;
+  }  
 }
+
+
 
 
 $o = new WeiboOAuth( WB_AKEY , WB_SKEY  );

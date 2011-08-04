@@ -1,0 +1,1 @@
+<?phpclass User{  private $username;    public function __construct($username)  {    $this->username = trim($username);  }    public function getAuthStatus()  {    $db = new DB('sessions');        return $db->count($this->username);  }  }
