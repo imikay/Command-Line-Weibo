@@ -1,7 +1,7 @@
 <?php
 include_once( 'config.php' );
 include_once( 'weibooauth.php' );
-
+error_reporting(E_ALL);
 if (!defined('STDIN'))
 {
   define('STDIN', fopen('php://stdin', 'r'));
@@ -65,7 +65,8 @@ if ($nodeMap->getNamedItem('name')->nodeValue == 'authZForm')
   $opts = array(
   'http' => array(
     'method' => 'POST',
-    'header' => 'User-Agent: Mozilla/5.0 (Windows NT 5.1; rv:5.0) Gecko/20100101 Firefox/5.0\r\n',
+    'header' => 'User-Agent: Mozilla/5.0 (Windows NT 5.1; rv:5.0) Gecko/20100101 Firefox/5.0\r\n'
+               /* .'Content-type: application/x-www-form-urlencoded\r\n' */,
     'content' => http_build_query(array(
       'action' => 'submit',
       'forcelogin' => '',
