@@ -1,5 +1,5 @@
 <?php
-class CmdLineWeiboClient
+class CmdLineWeibo
 {
   private $config = null;
   private $session = null;
@@ -9,11 +9,13 @@ class CmdLineWeiboClient
   private $authStatus = null;
   private $username = '';
   
-  public function __construct()
+  // We start it with a username
+  public function __construct($username = '')
   {    
     $this->session = new Session();
     $this->db = new DB('users');        
     $this->config = Config::getInstance();        
+    $this->username = $username;
   }
   
   public function init()
@@ -51,12 +53,17 @@ class CmdLineWeiboClient
     return $this->authStatus;
   }
   
+  // First public interface
   public function auth()
   {
     if ($this->getAuthStatus() == false)
     {
       // Auth the user
       
+      
+    }
+    else
+    {
       
     }
   }
@@ -68,6 +75,11 @@ class CmdLineWeiboClient
   
   public function getOneUpdate()
   {
+  }
+  
+  public function saveUser()
+  {
+    $this->db->addUser($this->user)->save();
   }
   
       
