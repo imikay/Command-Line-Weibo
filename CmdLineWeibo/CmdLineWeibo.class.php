@@ -16,6 +16,7 @@ class CmdLineWeibo
     $this->db = new DB('users');        
     $this->config = Config::getInstance();        
     $this->username = $username;
+    $this->eventDispatcher = new sfEventDispatcher();
   }
   
   public function init()
@@ -47,10 +48,10 @@ class CmdLineWeibo
   {       
     if (is_null($this->authStatus))
     {
-      $this->authStatus = $this->db->count($this->user->getUsername());
+      $this->authStatus = $this->db->getOneUserByUsername($this->username);
     }
     
-    return $this->authStatus;
+    return !is_null($this->authStatus);
   }
   
   // First public interface
@@ -58,13 +59,29 @@ class CmdLineWeibo
   {
     if ($this->getAuthStatus() == false)
     {
+      // Trigger the password event
+      $event = new sfEvent($this, 'user.password_input', array());
+      $this->eventDispatcher->connect('user.password_input', array(new Listner, 'listenToUserPasswordInput'));
+      
+      $e = $this->eventDispatcher->notify($event);
+      $this->password = $e->getReturnValue();
+      
       // Auth the user
+      $accessToken = new Auth($this->username, $this->password, $this->config);
       
+      // Create a user 
+      $user = new User();
       
+      $user->setUsername($this->username);
+      $user->setPassword($this->password);
+      $user->setAccessToken($accessToken['access_token']);
+      $user->setAccessTokenSecret($accessToken['access_token_secret']);
+      
+      $this->addUser($user);
     }
     else
     {
-      
+      echo 'Already authed!';
     }
   }
   
