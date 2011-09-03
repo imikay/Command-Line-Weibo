@@ -1,36 +1,19 @@
 <?php
-include_once 'config.php';
-include_once 'weibooauth.php';
-include_once 'session.php';
+/**
+ * Includes
+ */ 
+require_once 'lib\vendor\Sina\weibooauth.php';
+require_once 'DB.class.php';
+require_once 'Config.class.php';
+require_once 'User.class.php';
+require_once 'BadCommandException.class.php';
+require_once 'CommandNotImplementException.class.php';
+require_once 'Auth.class.php';
+require_once 'Weibo.class.php';
 
-$config = Config::getInstance();
-$config->setParameter('key', '');
-$config->setParameter('seret', '');
+error_reporting(E_ALL);
 
-if (!defined('STDIN'))
-{
-  define('STDIN', fopen('php://stdin', 'r'));
-}
+$weibo = new Weibo();
+$weibo->run();
 
-echo 'Your username please: ';
 
-$username = trim(@fread(STDIN, 80));
-
-// Create a user object
-$user = new User($username);
-
-// Get auth status
-$authStatus = $user->getAuthStatus();
-
-if (!$authStatus)
-{
-  echo 'Your password please: ';
-  
-  $password = trim(@fread(STDIN, 80));
-  $user->setPassword($password);
-  
-  $auth = new Auth($user, $config);
-  $auth
-  
-  
-}
