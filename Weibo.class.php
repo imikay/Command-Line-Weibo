@@ -66,7 +66,7 @@ class Weibo
     $this->executeReadCommand(1);
   }
   
-  public function executeReadCommand($number = 10)
+  public function executeReadCommand($number = 20)
   {                          
     $ms = $this->weiboClient->home_timeline(); // done    
        
