@@ -2,8 +2,10 @@
 class Weibo
 {
   private $availableCommands = array(
-    'Send' => 'Send a tweet',
-    'Read' => 'Read your stream'    
+    'tweet' => 'Send a tweet',
+    'read'  => 'Read your stream',
+    'list'  => 'List all the available commands',
+    'exit'  => 'Exit'   
   );
   
   private $stdin;
@@ -14,26 +16,23 @@ class Weibo
   private $config;
   private $auth = null;
   private $user;
+  private $weiboClient;
   
   public function __construct()
   {             
     $this->stdin = defined('STDIN') ? STDIN : fopen('php://stdin', 'r');
     
     $this->db     = new DB('users');
-    var_dump($this->db);
     $this->config = Config::getInstance(array('key'    => '656326257',
                                               'secret' => 'ca82c8c5a3f0f7b7bd7f3661a3da541a'));                                                       
     $this->executeAuthCommand();                                              
+    $this->executeListCommand();
   }
   
   public function run()
-  {       
+  {           
     while (true)
-    {       
-       // if exists
-       echo ">> Choose an action: \n";
-       echo join(", \n", array_keys($this->availableCommands));
-       
+    {              
        $this->userCommandInfo = trim(@fread($this->stdin, 80));
        $this->userCommandInfo = array_map('trim', explode(' ', $this->userCommandInfo));
        
@@ -41,38 +40,36 @@ class Weibo
        
        if (!array_key_exists($this->userCommand, $this->availableCommands))
        {
-         echo ">> Command does not exists.\n";
+         echo "Command does not exists.\n";
          //throw new BadCommandException('Command not eixsts!');
        }
-       else if (!method_exists($this, 'execute'.$this->userCommand.'Command'))
+       else if (!method_exists($this, 'execute'.ucfirst($this->userCommand).'Command'))
        {
-          echo ">> This command has not been implemented!\n";
+          echo "This command has not been implemented!\n";
           
           //throw new CommandNotImplementException('This command has not been implemented!');
        }
        else
        {
-        call_user_func_array(array($this, 'execute'.$this->userCommand.'Command'), $this->userCommandInfo);
-       }
+        call_user_func_array(array($this, 'execute'.ucfirst($this->userCommand).'Command'), $this->userCommandInfo);
+       }              
     }
   }
   
-  public function executeSendCommand()
+  public function executeTweetCommand()
   {
-    echo "Send a tweet\n";
+    echo "Type your text here: \n";    
+    $tweet = trim(fread(STDIN, 280));
+    $this->weiboClient->update($tweet);
+    
+    // Read the the update you just sent
+    $this->executeReadCommand(1);
   }
   
   public function executeReadCommand($number = 10)
-  {
-    $c = new WeiboClient($this->config->getParameter('key'), 
-                          $this->config->getParameter('secret'),                          
-                          $this->user->getAccessToken(), 
-                          $this->user->getAccessTokenSecret() 
-                         );
-                          
-    $ms = $c->home_timeline(); // done    
-
-    //echo print_r($ms);          
+  {                          
+    $ms = $this->weiboClient->home_timeline(); // done    
+       
     $tweets = $ms;
     
     $t = array_splice($tweets, 0, $number);
@@ -87,12 +84,27 @@ class Weibo
       }
     }
   }
-
-  public function executeAuthCommand()
+    
+  public function executeListCommand()
+  {
+    echo "Available commands: \n";
+    echo "-----------------\n";       
+   
+    foreach ($this->availableCommands as $cmd => $description)
+    {
+      echo $cmd, ': ', $description;
+      
+      echo "\n";
+    }
+   
+    echo "-----------------\n";    
+  }
+  
+  private function executeAuthCommand()
   {
      echo "Command Line Weibo v0.1\n\n";
      
-     echo ">> You username please: ";
+     echo "You email please: ";
      
      $this->username = trim(@fread($this->stdin, 80));
      
@@ -126,5 +138,17 @@ class Weibo
         
         $this->user = $user;
      }  
+     
+    // Create weibo client 
+    $this->weiboClient = new WeiboClient($this->config->getParameter('key'), 
+                          $this->config->getParameter('secret'),                          
+                          $this->user->getAccessToken(), 
+                          $this->user->getAccessTokenSecret() 
+                         );     
   }  
+  
+  public function executeExitCommand()
+  {
+    exit("Bye.\n");    
+  }
 }
