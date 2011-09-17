@@ -5,11 +5,11 @@ Command Line Weibo
 
 Command line Weibo is a utility for you to send tweet directly from command line.
 
-## Usage: ##
+## Installation ##
 
 Download and extract it into a folder, fire up your command line,
 and cd to the diretory, run this command
-  $ php weibo.php
+      $ php weibo.php
 
 ## Available Commands ##
 
@@ -19,7 +19,7 @@ read: Read your home stream, you can control how many
 
       $ read 10
 
-      default is 20.
+default is 20.
 
 tweet: Send a tweet.
 list: List all the available commands.
