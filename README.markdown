@@ -9,6 +9,7 @@ Command line Weibo is a utility for you to send tweet directly from command line
 
 Download and extract it into a folder, fire up your command line,
 and cd to the diretory, run this command
+
       $ php weibo.php
 
 ## Available Commands ##
