@@ -29,7 +29,7 @@ exit: Exit.
 Note:
 -------------------
 
-This small app is still a work in progress, I may or may not continue the work.
+This small app is still a work in progress, I may or may not continue on this work.
 
 About Sina Weibo:
 -------------------
